@@ -46,7 +46,7 @@ RUN npx prisma generate
 
 # Copiar build e swagger
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/swagger.json ./swagger.json
+COPY swagger.json ./swagger.json
 
 # Ajustar permissões
 RUN chown -R nodejs:nodejs /app
