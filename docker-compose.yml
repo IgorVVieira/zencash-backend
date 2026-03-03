@@ -37,7 +37,7 @@ services:
 
   api:
     build: .
-    container_name: zentavo-api
+    container_name: zencash-api
     restart: always
     ports:
       - '127.0.0.1:3001:3001'

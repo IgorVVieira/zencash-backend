@@ -1,11 +1,11 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Zentavo API Documentation",
+    "title": "Zencash API Documentation",
     "version": "1.0.0",
-    "description": "API Documentation for Zentavo - A financial management system",
+    "description": "API Documentation for Zencash - A financial management system",
     "contact": {
-      "name": "Zentavo Team"
+      "name": "Zencash Team"
     }
   },
   "servers": [
@@ -14,7 +14,7 @@
       "description": "Development server"
     },
     {
-      "url": "https://api.zentavo.com",
+      "url": "https://api.zencash.com",
       "description": "Production server"
     }
   ],
