@@ -35,6 +35,32 @@ services:
     networks:
       - backend
 
+  loki:
+    image: grafana/loki:3.0.0
+    container_name: loki
+    restart: always
+    ports:
+      - '127.0.0.1:3100:3100'
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - backend
+
+  grafana:
+    image: grafana/grafana:11.0.0
+    container_name: grafana
+    restart: always
+    ports:
+      - '127.0.0.1:3000:3000'
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - loki
+    networks:
+      - backend
+
   api:
     build: .
     container_name: zencash-api
@@ -44,6 +70,8 @@ services:
     env_file:
       - .env
     depends_on:
+      loki:
+        condition: service_started
       rabbitmq:
         condition: service_healthy
       postgres:
@@ -54,6 +82,7 @@ services:
 volumes:
   postgres-data:
   rabbitmq-data:
+  grafana-data:
 
 networks:
   backend:
