@@ -111,7 +111,7 @@ export class TransactionImportConsumerUseCase implements IMessageConsumerUseCase
         status: TransactionImportStatus.FAILED,
       });
 
-      logger.error('Erro ao processar ofx da fila:', error);
+      logger.error({ message: 'Error processing OFX from queue', error });
     }
   }
 }

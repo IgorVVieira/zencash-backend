@@ -22,7 +22,7 @@ export class RabbitMQQueueAdapter implements IMessageQueuePort {
       RabbitMQQueueAdapter.connected = true;
       logger.info('Connected to RabbitMQ');
     } catch (error) {
-      logger.error('Failed to connect to RabbitMQ:', error);
+      logger.error({ message: 'Failed to connect to RabbitMQ', error });
       RabbitMQQueueAdapter.connected = false;
       throw error;
     }
@@ -37,7 +37,7 @@ export class RabbitMQQueueAdapter implements IMessageQueuePort {
       await this.channel.assertQueue(queue, { durable: true });
       this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
     } catch (error) {
-      logger.error('Failed to publish message to RabbitMQ:', error);
+      logger.error({ message: 'Failed to publish message to RabbitMQ', error });
       throw error;
     }
   }
@@ -58,7 +58,7 @@ export class RabbitMQQueueAdapter implements IMessageQueuePort {
         }
       });
     } catch (error) {
-      logger.error('Failed to subscribe to RabbitMQ:', error);
+      logger.error({ message: 'Failed to subscribe to RabbitMQ', error });
       throw error;
     }
   }

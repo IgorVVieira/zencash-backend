@@ -61,7 +61,7 @@ startConsumers()
     logger.info('Consumers started');
   })
   .catch(error => {
-    logger.error('Error starting consumers:', error);
+    logger.error({ message: 'Error starting consumers', error });
   });
 
 export { app };

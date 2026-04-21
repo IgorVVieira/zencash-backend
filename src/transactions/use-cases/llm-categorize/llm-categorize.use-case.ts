@@ -64,7 +64,7 @@ export class LlmCategorizeUseCase implements IBaseUseCase<
 
       return await this.llmProvider.execute<LlmCategorizeDtoResponseDto[]>(prompt);
     } catch (error) {
-      logger.error('Error in LlmCategorizeUseCase', error);
+      logger.error({ message: 'Error in LlmCategorizeUseCase', error });
 
       return [];
     }

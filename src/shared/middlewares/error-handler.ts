@@ -27,7 +27,6 @@ export const errorHandler = (err: Error, req: Request, res: Response, next: Next
     message: error.message,
     stack: error?.stack,
   });
-  logger.error({ igu: error });
 
   res.status(statusCode).json({
     statusCode,

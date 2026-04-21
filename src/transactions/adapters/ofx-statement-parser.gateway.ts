@@ -41,7 +41,7 @@ export class OfxStatementParserGateway implements IOfxStatementParser {
         method: this.getMethod(statement.MEMO),
       }));
     } catch (error) {
-      logger.error('Error parsing OFX file:', error);
+      logger.error({ message: 'Error parsing OFX file', error });
       throw new Error('Error parsing OFX file');
     }
   }
