@@ -12,10 +12,9 @@ import {
 } from '@transactions/dtos/llm-categorize.dto';
 
 @injectable()
-export class LlmCategorizeUseCase implements IBaseUseCase<
-  LlmCategorizeDto,
-  LlmCategorizeDtoResponseDto[]
-> {
+export class LlmCategorizeUseCase
+  implements IBaseUseCase<LlmCategorizeDto, LlmCategorizeDtoResponseDto[]>
+{
   constructor(
     @inject(Injections.LLM_PROVIDER) private readonly llmProvider: ILlmProvider,
     @inject(Injections.LIST_CATEGORIES_USE_CASE)

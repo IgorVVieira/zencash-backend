@@ -7,7 +7,7 @@
     "test": "jest --runInBand",
     "test:staged": "jest --passWithNoTests --silent --findRelatedTests",
     "lint": "biome format src",
-    "lint:fix": "biome format --write /src",
+    "lint:fix": "biome format --write src",
     "lint-staged": "lint-staged",
     "format": "prettier --write \"src/**/*.{ts,json,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,json,md}\"",

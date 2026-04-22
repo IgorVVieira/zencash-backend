@@ -7,10 +7,9 @@ import { ITransactionRepositoryPort } from '@transactions/domain/repositories/tr
 import { GetTransactionsDto, TransactionDto } from '@transactions/dtos';
 
 @injectable()
-export class GetTransactionsByDateUseCase implements IBaseUseCase<
-  GetTransactionsDto,
-  TransactionDto[]
-> {
+export class GetTransactionsByDateUseCase
+  implements IBaseUseCase<GetTransactionsDto, TransactionDto[]>
+{
   constructor(
     @inject(Injections.TRANSACTION_REPOSITORY)
     private readonly transactionRepository: ITransactionRepositoryPort,

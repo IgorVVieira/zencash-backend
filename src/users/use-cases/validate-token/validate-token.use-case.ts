@@ -7,10 +7,9 @@ import { IVerificationTokenRepositoryPort } from '@users/domain/repositories/ver
 import { ValidateTokenDto } from '@users/dtos';
 
 @injectable()
-export class ValidateTokenUseCase implements IBaseUseCase<
-  ValidateTokenDto,
-  { isValid: boolean; userId?: string; tokenId?: string }
-> {
+export class ValidateTokenUseCase
+  implements IBaseUseCase<ValidateTokenDto, { isValid: boolean; userId?: string; tokenId?: string }>
+{
   constructor(
     @inject(Injections.VERIFICATION_TOKEN_REPOSITORY)
     private readonly verificationTokenRepository: IVerificationTokenRepositoryPort,
