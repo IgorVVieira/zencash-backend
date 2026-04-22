@@ -16,10 +16,9 @@ import {
 import { IPaymentGatewayPort } from '@payments/ports/payment-gateway.port';
 
 @injectable()
-export class CreatePaymentLinkUseCase implements IBaseUseCase<
-  CreatePaymentLinkRequestDto,
-  PaymentLinkDto
-> {
+export class CreatePaymentLinkUseCase
+  implements IBaseUseCase<CreatePaymentLinkRequestDto, PaymentLinkDto>
+{
   /* eslint-disable max-params */
   constructor(
     @inject(Injections.PRODUCT_REPOSITORY)

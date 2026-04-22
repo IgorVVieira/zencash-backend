@@ -1,4 +1,4 @@
-const config = {
+export default {
   roots: ['<rootDir>/src'],
   collectCoverage: true,
   setupFilesAfterEnv: ['<rootDir>/jest-setup.ts'],
@@ -6,7 +6,7 @@ const config = {
   coverageDirectory: 'coverage',
   testEnvironment: 'node',
   transform: {
-    '.+\\.ts$': 'ts-jest',
+    '.+\\.ts$': ['ts-jest', { useESM: false, tsconfig: { types: ['jest', 'node'] } }],
   },
   testMatch: ['**/*.spec.ts'],
   moduleNameMapper: {
@@ -16,5 +16,3 @@ const config = {
     '^@payments/(.*)$': '<rootDir>/src/payments/$1',
   },
 };
-
-module.exports = config;
