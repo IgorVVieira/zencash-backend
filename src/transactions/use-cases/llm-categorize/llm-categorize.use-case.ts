@@ -63,7 +63,14 @@ export class LlmCategorizeUseCase
 
       return await this.llmProvider.execute<LlmCategorizeDtoResponseDto[]>(prompt);
     } catch (error) {
-      logger.error({ message: 'Error in LlmCategorizeUseCase', error });
+      const isRateLimit = (error as { status?: number })?.status === 429;
+      if (isRateLimit) {
+        logger.warn({
+          message: 'LLM categorization skipped (rate limit) — transactions saved without categories',
+        });
+      } else {
+        logger.error({ message: 'Error in LlmCategorizeUseCase', error });
+      }
 
       return [];
     }
