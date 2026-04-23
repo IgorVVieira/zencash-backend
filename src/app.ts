@@ -64,15 +64,4 @@ startConsumers()
     logger.error({ message: 'Error starting consumers', error });
   });
 
-process.on('SIGTERM', async () => {
-  try {
-    await stopQueue();
-    logger.info('Queue stopped');
-
-    process.exit(0);
-  } catch (error) {
-    logger.error({ message: 'Error stopping queue', error });
-  }
-});
-
 export { app };
