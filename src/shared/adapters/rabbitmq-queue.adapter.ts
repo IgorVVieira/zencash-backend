@@ -10,21 +10,32 @@ export class RabbitMQQueueAdapter implements IMessageQueuePort {
   private connection: ChannelModel;
   private channel: Channel;
   private static connected: boolean = false;
+  private static readonly MAX_RETRIES = 5;
+  private static readonly RETRY_DELAY_MS = 3000;
 
   async connect(): Promise<void> {
     if (RabbitMQQueueAdapter.connected) {
       return;
     }
-    try {
-      this.connection = await client.connect(process.env.RABBITMQ_URL as string);
 
-      this.channel = await this.connection.createChannel();
-      RabbitMQQueueAdapter.connected = true;
-      logger.info('Connected to RabbitMQ');
-    } catch (error) {
-      logger.error({ message: 'Failed to connect to RabbitMQ', error });
-      RabbitMQQueueAdapter.connected = false;
-      throw error;
+    for (let attempt = 1; attempt <= RabbitMQQueueAdapter.MAX_RETRIES; attempt++) {
+      try {
+        this.connection = await client.connect(process.env.RABBITMQ_URL as string);
+        this.channel = await this.connection.createChannel();
+        RabbitMQQueueAdapter.connected = true;
+        logger.info('Connected to RabbitMQ');
+        return;
+      } catch (error) {
+        logger.warn({
+          message: `RabbitMQ connection attempt ${attempt}/${RabbitMQQueueAdapter.MAX_RETRIES} failed`,
+          error,
+        });
+        if (attempt === RabbitMQQueueAdapter.MAX_RETRIES) {
+          RabbitMQQueueAdapter.connected = false;
+          throw error;
+        }
+        await new Promise(res => setTimeout(res, RabbitMQQueueAdapter.RETRY_DELAY_MS));
+      }
     }
   }
 
@@ -46,8 +57,9 @@ export class RabbitMQQueueAdapter implements IMessageQueuePort {
     if (!RabbitMQQueueAdapter.connected) {
       await this.connect();
     }
-    await this.channel.assertQueue(queue, { durable: true });
+
     try {
+      await this.channel.assertQueue(queue, { durable: true });
       await this.channel.consume(queue, async message => {
         if (message) {
           const content = message?.content?.toString();
@@ -66,6 +78,7 @@ export class RabbitMQQueueAdapter implements IMessageQueuePort {
   async close(): Promise<void> {
     if (RabbitMQQueueAdapter.connected) {
       await this.channel.close();
+      await this.connection.close();
       RabbitMQQueueAdapter.connected = false;
     }
   }
