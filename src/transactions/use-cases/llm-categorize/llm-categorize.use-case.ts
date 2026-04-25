@@ -1,7 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 
 import { IBaseUseCase } from '@shared/domain/use-cases/base.use-case';
-import { ILlmProvider } from '@shared/gateways/llm-provider.port';
+import { ILlmProvider } from '@shared/llm/llm-provider.port';
 import { Injections } from '@shared/types/injections';
 import { logger } from '@shared/utils/logger';
 
@@ -39,29 +39,24 @@ export class LlmCategorizeUseCase
         },
       ];
 
+      const instructions = 'You are a financial transaction categorization assistant.';
       const prompt = `
-      You are a financial transaction categorization assistant.
-      
       ## Task
       Analyze the transactions below and assign the most appropriate category to each one based on the description and value.
-      
       ## Categories available
-      ${JSON.stringify(categoriesData, null, 2)}
-      
+      ${JSON.stringify(categoriesData)}
       ## Transactions to categorize
-      ${JSON.stringify(transactions, null, 2)}
-      
+      ${JSON.stringify(transactions)}
       ## Rules
       - Each transaction must receive exactly one category
       - Choose the category that best matches the transaction description
       - If no category fits, return null in categoryId
       - Return one result per transaction, keeping the original externalId
-      
       ## Expected return format
-      ${JSON.stringify(exampleReturn, null, 2)}
+      ${JSON.stringify(exampleReturn)}
       `;
 
-      return await this.llmProvider.execute<LlmCategorizeDtoResponseDto[]>(prompt);
+      return await this.llmProvider.execute<LlmCategorizeDtoResponseDto[]>(prompt, instructions);
     } catch (error) {
       const isRateLimit = (error as { status?: number })?.status === 429;
       if (isRateLimit) {

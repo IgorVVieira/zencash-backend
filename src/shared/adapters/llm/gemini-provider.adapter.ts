@@ -1,7 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 import { injectable } from 'tsyringe';
 
-import { ILlmProvider } from '@shared/gateways/llm-provider.port';
+import { ILlmProvider } from '@shared/llm/llm-provider.port';
 import { logger } from '@shared/utils/logger';
 import { HttpStatusCode } from 'axios';
 

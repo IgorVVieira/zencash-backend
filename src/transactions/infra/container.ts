@@ -1,10 +1,10 @@
 import { container } from 'tsyringe';
 
-import { GeminiProvider } from '@shared/adapters/gemini-provider.adapter';
 import { RabbitMQQueueAdapter } from '@shared/adapters/rabbitmq-queue.adapter';
-import { ILlmProvider } from '@shared/gateways/llm-provider.port';
+import { ILlmProvider } from '@shared/llm/llm-provider.port';
 import { Injections } from '@shared/types/injections';
 
+import { OpenAiProvider } from '@shared/adapters/llm/open-ai.adapter';
 import { OfxStatementParserGateway } from '@transactions/adapters/ofx-statement-parser.gateway';
 import { CategoryRepositoryAdapter } from '@transactions/adapters/repositories/category.repository.adapter';
 import { TransactionImportRepository } from '@transactions/adapters/repositories/transaction-import.repository';
@@ -44,7 +44,7 @@ container.registerSingleton<IOfxStatementParser>(
   OfxStatementParserGateway,
 );
 
-container.registerSingleton<ILlmProvider>(Injections.LLM_PROVIDER, GeminiProvider);
+container.registerSingleton<ILlmProvider>(Injections.LLM_PROVIDER, OpenAiProvider);
 
 container.registerSingleton(Injections.CREATE_CATEGORY_USE_CASE, CreateCategoryUseCase);
 container.registerSingleton(Injections.LIST_CATEGORIES_USE_CASE, ListCategoriesUseCase);
