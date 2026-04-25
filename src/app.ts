@@ -22,7 +22,7 @@ import { transactionRouter } from '@transactions/infra/routes';
 import express from 'express';
 
 import { limiter } from './rate-limit';
-import { startConsumers, stopQueue } from './workers';
+import { startConsumers } from './workers';
 
 const app = express();
 
@@ -64,15 +64,5 @@ startConsumers()
     logger.error({ message: 'Error starting consumers', error });
   });
 
-process.on('SIGTERM', async () => {
-  try {
-    await stopQueue();
-    logger.info('Queue stopped');
-    process.exit(0);
-  } catch (error) {
-    logger.error({ message: 'Error stopping queue', error });
-    process.exit(1);
-  }
-});
 
 export { app };
