@@ -49,6 +49,7 @@
     "@google/genai": "^1.50.1",
     "@prisma/adapter-pg": "6.19",
     "@prisma/client": "6.19",
+    "amqp-connection-manager": "^5.0.0",
     "amqplib": "^1.0.3",
     "axios": "^1.15.2",
     "bcrypt": "^5.1.1",

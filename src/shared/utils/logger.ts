@@ -4,7 +4,11 @@ const transport =
   process.env.NODE_ENV === 'production' && process.env.GRAFANA_LOKI_URL
     ? pino.transport({
         targets: [
-          { target: 'pino/file', level: 'info', options: { destination: 1 } },
+          {
+            target: 'pino/file',
+            level: 'info',
+            options: { destination: 1 },
+          },
           {
             target: 'pino-loki',
             level: 'info',
@@ -19,7 +23,7 @@ const transport =
               silenceErrors: true,
               replaceTimestamp: true,
               timeout: 3000,
-              batching: { interval: 5 },
+              interval: 5,
             },
           },
         ],
