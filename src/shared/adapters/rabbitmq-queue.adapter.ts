@@ -26,7 +26,7 @@ export class RabbitMQQueueAdapter implements IMessageQueuePort {
 
   async publish<T>(queue: string, message: T): Promise<void> {
     try {
-      this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
+      this.channel.sendToQueue(queue, message);
     } catch (error) {
       logger.error({ message: 'Failed to publish message to RabbitMQ', error });
     }
