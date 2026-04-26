@@ -43,6 +43,7 @@ export class TransactionImportConsumerUseCase implements IMessageConsumerUseCase
 
   private async processOfxStatementMessage(data: ImportTransactionDto): Promise<void> {
     const { userId, file, transactionImportId } = data;
+    logger.info({ data });
 
     try {
       await this.transactionImportRepository.update(transactionImportId as string, {
@@ -107,10 +108,11 @@ export class TransactionImportConsumerUseCase implements IMessageConsumerUseCase
         status: TransactionImportStatus.COMPLETED,
       });
     } catch (error) {
-      await this.transactionImportRepository.update(transactionImportId as string, {
-        status: TransactionImportStatus.FAILED,
-      });
-
+      if (transactionImportId) {
+        await this.transactionImportRepository.update(transactionImportId, {
+          status: TransactionImportStatus.FAILED,
+        });
+      }
       logger.error({ message: 'Error processing OFX from queue', error });
     }
   }
