@@ -36,7 +36,7 @@ export class RabbitMQQueueAdapter implements IMessageQueuePort {
     try {
       await this.channel.consume(queue, async message => {
         if (message) {
-          logger.info({ message })
+          logger.info({ data: message.content.toString() })
           const content = message?.content?.toString();
           const parsedMessage = JSON.parse(content) as T;
 
