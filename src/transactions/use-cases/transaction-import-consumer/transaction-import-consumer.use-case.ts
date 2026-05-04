@@ -43,7 +43,6 @@ export class TransactionImportConsumerUseCase implements IMessageConsumerUseCase
 
   private async processOfxStatementMessage(data: ImportTransactionDto): Promise<void> {
     const { userId, file, transactionImportId } = data;
-    logger.info({ data });
 
     try {
       await this.transactionImportRepository.update(transactionImportId as string, {
@@ -92,7 +91,7 @@ export class TransactionImportConsumerUseCase implements IMessageConsumerUseCase
 
         transactionsToSave = newTransactions.map(transaction => {
           const categorized = categorizedTransactions?.find(
-            c => c.externalId === transaction.externalId,
+            category => category.externalId === transaction.externalId,
           );
 
           return {

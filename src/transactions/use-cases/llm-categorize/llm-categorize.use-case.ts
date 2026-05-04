@@ -35,24 +35,34 @@ export class LlmCategorizeUseCase
       const exampleReturn: LlmCategorizeDtoResponseDto[] = [
         {
           externalId: 'string',
-          categoryId: 'string uuidv4',
+          categoryId: 'string uuidv4 || null',
         },
       ];
 
       const instructions = 'You are a financial transaction categorization assistant.';
       const prompt = `
-      ## Task
-      Analyze the transactions below and assign the most appropriate category to each one based on the description and value.
-      ## Categories available
-      ${JSON.stringify(categoriesData)}
-      ## Transactions to categorize
-      ${JSON.stringify(transactions)}
-      ## Rules
-      - Each transaction must receive exactly one category
-      - Choose the category that best matches the transaction description
-      - If no category fits, return null in categoryId
-      - Return one result per transaction, keeping the original externalId
-      ## Expected return format
+      ## Role
+      You are a financial transaction categorization engine. Your only job is to assign categories to transactions with high precision.
+      ## Available Categories
+      ${JSON.stringify(categoriesData, null, 2)}
+      ## Transactions to Categorize
+      ${JSON.stringify(transactions, null, 2)}
+      ## Categorization Rules
+      1. Analyze each transaction's description semantically — consider abbreviations, merchant names, and common patterns (e.g., "PGTO PIX", "COMPRA DEBITO", "TED RECEBIDA").
+      2. Assign the category whose name **best matches** the nature of the transaction.
+      3. A weak or uncertain match is NOT acceptable — if you are not confident, return null.
+      4. Return **null** in categoryId when:
+         - No category is a clear match
+         - The description is ambiguous and could fit multiple categories equally
+         - The transaction appears to be a transfer, reversal, or adjustment with no clear category
+      5. Do NOT invent, guess, or use categories not listed above.
+      6. Return **exactly one result per transaction**, preserving the original externalId.
+      ## Output Format
+      Return a **raw JSON array only** — no markdown, no explanation, no code fences.
+      Each element must follow this exact structure:
+      { "externalId": string, "categoryId": string | null }
+      
+      ## Example Output
       ${JSON.stringify(exampleReturn)}
       `;
 
