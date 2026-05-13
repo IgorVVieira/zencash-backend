@@ -85,5 +85,17 @@
     "@shared": "dist/shared",
     "@types": "dist/types",
     "@payments": "dist/payments"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma",
+      "bcrypt",
+      "esbuild",
+      "protobufjs",
+      "@google/genai",
+      "unrs-resolver"
+    ]
   }
 }
