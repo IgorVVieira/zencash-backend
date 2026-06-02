@@ -9,9 +9,9 @@ import { logger } from '@shared/utils/logger';
 import { IFixedBillOccurrenceRepositoryPort } from '@fixed-bills/domain/repositories/fixed-bill-occurrence.repository.port';
 import { IFixedBillRepositoryPort } from '@fixed-bills/domain/repositories/fixed-bill.repository.port';
 import { TransactionImportStatus } from '@transactions/domain/entities/transaction-import.entity';
+import { TransactionEntity } from '@transactions/domain/entities/transaction.entity';
 import { ITransactionImportRepositoryPort } from '@transactions/domain/repositories/transaction-import.repository.port';
 import { ITransactionRepositoryPort } from '@transactions/domain/repositories/transaction.repository.port';
-import { TransactionEntity } from '@transactions/domain/entities/transaction.entity';
 import { ImportTransactionDto } from '@transactions/dtos';
 import {
   LlmCategorizeDto,
@@ -42,6 +42,7 @@ export class TransactionImportConsumerUseCase implements IMessageConsumerUseCase
   ) {}
 
   async start(): Promise<void> {
+    console.log(process.env.QUEUE_PROCESS_TRANSACTIONS)
     await this.messageQueuePort.subscribe<ImportTransactionDto>(
       process.env.QUEUE_PROCESS_TRANSACTIONS as string,
       async data => this.processOfxStatementMessage(data),
@@ -127,6 +128,7 @@ export class TransactionImportConsumerUseCase implements IMessageConsumerUseCase
         });
       }
       logger.error({ message: 'Error processing OFX from queue', error });
+      throw error;
     }
   }
 }
