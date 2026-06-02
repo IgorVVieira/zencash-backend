@@ -84,7 +84,8 @@
     "@transactions": "dist/transactions",
     "@shared": "dist/shared",
     "@types": "dist/types",
-    "@payments": "dist/payments"
+    "@payments": "dist/payments",
+    "@fixed-bills": "dist/fixed-bills"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

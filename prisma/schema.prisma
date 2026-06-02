@@ -27,11 +27,13 @@ model User {
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
   deletedAt          DateTime?           @map("deleted_at")
-  categories         Category[]
-  transactions       Transaction[]
-  verificationTokens VerificationToken[]
-  subscriptions      Subscription[]
-  transactionImports TransactionImport[]
+  categories             Category[]
+  transactions           Transaction[]
+  verificationTokens     VerificationToken[]
+  subscriptions          Subscription[]
+  transactionImports     TransactionImport[]
+  fixedBills             FixedBill[]
+  fixedBillOccurrences   FixedBillOccurrence[]
 
   @@map("users")
 }
@@ -47,6 +49,7 @@ model Category {
   deletedAt    DateTime?     @map("deleted_at")
   user         User          @relation(fields: [userId], references: [id])
   transactions Transaction[]
+  fixedBills   FixedBill[]
 
   @@index([userId], name: "category_user_id_index")
   @@map("categories")
@@ -65,8 +68,9 @@ model Transaction {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime? @map("deleted_at")
-  user        User      @relation(fields: [userId], references: [id])
-  category    Category? @relation(fields: [categoryId], references: [id])
+  user                 User                  @relation(fields: [userId], references: [id])
+  category             Category?             @relation(fields: [categoryId], references: [id])
+  fixedBillOccurrences FixedBillOccurrence[]
 
   @@index([userId], name: "transaction_user_id_index")
   @@index([categoryId], name: "category_id_index")
@@ -136,6 +140,52 @@ model TransactionImport {
   user User @relation(fields: [userId], references: [id])
 
   @@map("transaction_imports")
+}
+
+model FixedBill {
+  id            String    @id @default(uuid()) @db.Uuid
+  userId        String    @map("user_id") @db.Uuid
+  categoryId    String?   @map("category_id") @db.Uuid
+  name          String
+  amount        Float
+  recurrence    String
+  dueDay        Int       @map("due_day")
+  dueMonth      Int?      @map("due_month")
+  matchKeywords String[]  @map("match_keywords")
+  isActive      Boolean   @default(true) @map("is_active")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime? @map("deleted_at")
+
+  user        User                  @relation(fields: [userId], references: [id])
+  category    Category?             @relation(fields: [categoryId], references: [id])
+  occurrences FixedBillOccurrence[]
+
+  @@index([userId], name: "fixed_bill_user_id_index")
+  @@map("fixed_bills")
+}
+
+model FixedBillOccurrence {
+  id             String    @id @default(uuid()) @db.Uuid
+  fixedBillId    String    @map("fixed_bill_id") @db.Uuid
+  userId         String    @map("user_id") @db.Uuid
+  transactionId  String?   @map("transaction_id") @db.Uuid
+  dueDate        DateTime  @map("due_date")
+  status         String    @default("PENDING")
+  paidAmount     Float?    @map("paid_amount")
+  referenceMonth Int       @map("reference_month")
+  referenceYear  Int       @map("reference_year")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime? @map("deleted_at")
+
+  fixedBill   FixedBill    @relation(fields: [fixedBillId], references: [id])
+  user        User         @relation(fields: [userId], references: [id])
+  transaction Transaction? @relation(fields: [transactionId], references: [id])
+
+  @@index([fixedBillId], name: "fixed_bill_occurrence_bill_id_index")
+  @@index([userId], name: "fixed_bill_occurrence_user_id_index")
+  @@map("fixed_bill_occurrences")
 }
 
 // npx prisma migrate dev --name init

@@ -6,9 +6,12 @@ import { IMessageQueuePort } from '@shared/gateways/message-queue.port';
 import { Injections } from '@shared/types/injections';
 import { logger } from '@shared/utils/logger';
 
+import { IFixedBillOccurrenceRepositoryPort } from '@fixed-bills/domain/repositories/fixed-bill-occurrence.repository.port';
+import { IFixedBillRepositoryPort } from '@fixed-bills/domain/repositories/fixed-bill.repository.port';
 import { TransactionImportStatus } from '@transactions/domain/entities/transaction-import.entity';
 import { ITransactionImportRepositoryPort } from '@transactions/domain/repositories/transaction-import.repository.port';
 import { ITransactionRepositoryPort } from '@transactions/domain/repositories/transaction.repository.port';
+import { TransactionEntity } from '@transactions/domain/entities/transaction.entity';
 import { ImportTransactionDto } from '@transactions/dtos';
 import {
   LlmCategorizeDto,
@@ -32,6 +35,10 @@ export class TransactionImportConsumerUseCase implements IMessageConsumerUseCase
     >,
     @inject(Injections.TRANSACTION_IMPORT_REPOSITORY)
     private readonly transactionImportRepository: ITransactionImportRepositoryPort,
+    @inject(Injections.FIXED_BILL_REPOSITORY)
+    private readonly fixedBillRepository: IFixedBillRepositoryPort,
+    @inject(Injections.FIXED_BILL_OCCURRENCE_REPOSITORY)
+    private readonly occurrenceRepository: IFixedBillOccurrenceRepositoryPort,
   ) {}
 
   async start(): Promise<void> {
@@ -103,6 +110,13 @@ export class TransactionImportConsumerUseCase implements IMessageConsumerUseCase
 
       await this.transactionRepository.createMany(transactionsToSave);
 
+      await matchTransactionsToFixedBills(
+        transactionsToSave as unknown as TransactionEntity[],
+        userId,
+        this.fixedBillRepository,
+        this.occurrenceRepository,
+      );
+
       await this.transactionImportRepository.update(transactionImportId as string, {
         status: TransactionImportStatus.COMPLETED,
       });
@@ -113,6 +127,45 @@ export class TransactionImportConsumerUseCase implements IMessageConsumerUseCase
         });
       }
       logger.error({ message: 'Error processing OFX from queue', error });
+    }
+  }
+}
+
+export async function matchTransactionsToFixedBills(
+  transactions: TransactionEntity[],
+  userId: string,
+  fixedBillRepository: IFixedBillRepositoryPort,
+  occurrenceRepository: IFixedBillOccurrenceRepositoryPort,
+): Promise<void> {
+  const bills = await fixedBillRepository.findAllActiveByUserId(userId);
+
+  for (const transaction of transactions) {
+    for (const bill of bills) {
+      const matched = bill.matchKeywords.some(keyword =>
+        transaction.description.toLowerCase().includes(keyword.toLowerCase()),
+      );
+
+      if (!matched) continue;
+
+      const txDate = new Date(transaction.date);
+      const occurrence = await occurrenceRepository.findByBillAndPeriod({
+        fixedBillId: bill.id as string,
+        referenceMonth: txDate.getUTCMonth() + 1,
+        referenceYear: txDate.getUTCFullYear(),
+      });
+
+      if (occurrence && occurrence.status === 'PENDING') {
+        await occurrenceRepository.update(
+          occurrence.id as string,
+          {
+            status: 'PAID',
+            paidAmount: transaction.amount,
+            transactionId: transaction.id as string,
+          } as any,
+        );
+      }
+
+      break;
     }
   }
 }

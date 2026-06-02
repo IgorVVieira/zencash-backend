@@ -32,6 +32,12 @@ transactionRouter.get(
   (req, res) => dashboardController.listByLastSixMonths(req, res),
 );
 
+transactionRouter.get(
+  '/transactions/dashboard/fixed-bills/:month/:year',
+  authMiddleware,
+  (req, res) => dashboardController.getFixedBillsSummary(req, res),
+);
+
 transactionRouter.put('/transactions/:id', authMiddleware, hasSubscriptionMiddleware, (req, res) =>
   transactionController.update(req, res),
 );

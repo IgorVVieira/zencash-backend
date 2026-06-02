@@ -45,4 +45,14 @@ export class DashboardController {
 
     return response.status(HttpStatus.OK).json(data);
   }
+
+  async getFixedBillsSummary(req: Request, res: Response): Promise<Response> {
+    const { month, year } = req.params;
+    const summary = await this.dashboardUseCase.getFixedBillsSummary({
+      userId: req.userId,
+      month: Number(month),
+      year: Number(year),
+    });
+    return res.status(HttpStatus.OK).json(summary);
+  }
 }

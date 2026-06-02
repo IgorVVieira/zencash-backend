@@ -45,4 +45,15 @@ export enum Injections {
   PAYMENT_GATEWAY = 'PAYMENT_GATEWAY',
 
   LLM_PROVIDER = 'LLM_PROVIDER',
+
+  // Fixed Bills
+  FIXED_BILL_REPOSITORY = 'FixedBillRepository',
+  FIXED_BILL_OCCURRENCE_REPOSITORY = 'FixedBillOccurrenceRepository',
+  CREATE_FIXED_BILL_USE_CASE = 'CreateFixedBillUseCase',
+  LIST_FIXED_BILLS_USE_CASE = 'ListFixedBillsUseCase',
+  UPDATE_FIXED_BILL_USE_CASE = 'UpdateFixedBillUseCase',
+  DELETE_FIXED_BILL_USE_CASE = 'DeleteFixedBillUseCase',
+  LIST_OCCURRENCES_USE_CASE = 'ListOccurrencesUseCase',
+  UPDATE_OCCURRENCE_USE_CASE = 'UpdateOccurrenceUseCase',
+  GENERATE_OCCURRENCES_USE_CASE = 'GenerateOccurrencesUseCase',
 }

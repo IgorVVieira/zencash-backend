@@ -12,11 +12,13 @@ import { swaggerSpec } from '@shared/config/swagger.config';
 import { errorHandler } from '@shared/middlewares/error-handler';
 import { logger } from '@shared/utils/logger';
 
+import '@fixed-bills/infra/container';
 import '@payments/infra/container';
 import '@transactions/infra/container';
 import '@users/infra/container';
 import { userRouter } from '@users/infra/routes';
 
+import { fixedBillsRouter } from '@fixed-bills/infra/routes';
 import { paymentRouter } from '@payments/infra/routes';
 import { transactionRouter } from '@transactions/infra/routes';
 import express from 'express';
@@ -47,7 +49,7 @@ app.use(
 app.use(express.json());
 app.use(limiter);
 
-app.use('/api', userRouter, transactionRouter, paymentRouter);
+app.use('/api', userRouter, transactionRouter, paymentRouter, fixedBillsRouter);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(errorHandler);
@@ -63,6 +65,5 @@ startConsumers()
   .catch(error => {
     logger.error({ message: 'Error starting consumers', error });
   });
-
 
 export { app };
