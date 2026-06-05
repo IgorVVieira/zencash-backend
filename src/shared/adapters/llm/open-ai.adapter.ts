@@ -26,7 +26,8 @@ export class OpenAiProvider implements ILlmProvider {
 
         return JSON.parse(response.output_text as string) as T;
       } catch (error) {
-        const isRateLimit = (error as { status?: number })?.status === HttpStatusCode.TooManyRequests;
+        const isRateLimit =
+          (error as { status?: number })?.status === HttpStatusCode.TooManyRequests;
 
         if (!isRateLimit || attempt === OpenAiProvider.MAX_RETRIES) {
           throw error;

@@ -11,16 +11,18 @@ import { IMessageQueuePort } from '../gateways/message-queue.port';
 export class RabbitMQQueueAdapter implements IMessageQueuePort {
   private readonly connection: AmqpConnectionManager;
   private readonly channel: ChannelWrapper;
-  
+
   constructor() {
     this.connection = amqp.connect([process.env.RABBITMQ_URL as string]);
     this.channel = this.connection.createChannel({
       json: true,
       setup: async (channel: ConfirmChannel) => {
-        return channel.assertQueue(process.env.QUEUE_PROCESS_TRANSACTIONS as string, { durable: true });
+        return channel.assertQueue(process.env.QUEUE_PROCESS_TRANSACTIONS as string, {
+          durable: true,
+        });
       },
     });
-    
+
     logger.info('Connected to RabbitMQ');
   }
 
@@ -36,7 +38,7 @@ export class RabbitMQQueueAdapter implements IMessageQueuePort {
     try {
       await this.channel.consume(queue, async message => {
         if (message) {
-          logger.info({ data: message.content.toString() })
+          logger.info({ data: message.content.toString() });
           const content = message?.content?.toString();
           const parsedMessage = JSON.parse(content) as T;
 
@@ -51,7 +53,7 @@ export class RabbitMQQueueAdapter implements IMessageQueuePort {
   }
 
   async close(): Promise<void> {
-      await this.channel.close();
-      await this.connection.close();
+    await this.channel.close();
+    await this.connection.close();
   }
 }

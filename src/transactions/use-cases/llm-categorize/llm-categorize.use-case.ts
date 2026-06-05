@@ -71,7 +71,8 @@ export class LlmCategorizeUseCase
       const isRateLimit = (error as { status?: number })?.status === 429;
       if (isRateLimit) {
         logger.warn({
-          message: 'LLM categorization skipped (rate limit) — transactions saved without categories',
+          message:
+            'LLM categorization skipped (rate limit) — transactions saved without categories',
         });
       } else {
         logger.error({ message: 'Error in LlmCategorizeUseCase', error });

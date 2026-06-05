@@ -28,7 +28,8 @@ export class GeminiProvider implements ILlmProvider {
 
         return JSON.parse(response.text as string) as T;
       } catch (error) {
-        const isRateLimit = (error as { status?: number })?.status === HttpStatusCode.TooManyRequests;
+        const isRateLimit =
+          (error as { status?: number })?.status === HttpStatusCode.TooManyRequests;
 
         if (!isRateLimit || attempt === GeminiProvider.MAX_RETRIES) {
           throw error;
